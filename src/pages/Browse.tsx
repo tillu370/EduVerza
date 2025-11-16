@@ -41,94 +41,98 @@ const Browse = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 hand-heading text-navy font-display">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-3 hand-heading text-navy font-display">
             EXPLORE RESOURCES
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Explore our collection of educational materials
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-6 sm:mb-8 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search by title, subject, or description..."
-              className="pl-10 sketchy-border bg-card"
+              className="pl-10 sketchy-border bg-card w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-navy font-display">DEPARTMENT</span>
-              <Select value={selectedDept} onValueChange={setSelectedDept}>
-                <SelectTrigger className="w-[180px] sketchy-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept} value={dept}>
-                      {dept}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div className="flex flex-col gap-4">
+            {/* Filters Row 1 */}
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">DEPARTMENT</span>
+                <Select value={selectedDept} onValueChange={setSelectedDept}>
+                  <SelectTrigger className="w-full sm:w-[180px] sketchy-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">TYPE</span>
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger className="w-full sm:w-[180px] sketchy-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {resourceTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="ml-auto flex gap-2">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => setViewMode("grid")}
+                  className={viewMode === "grid" ? "sketchy-shadow" : "sketchy-border"}
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => setViewMode("list")}
+                  className={viewMode === "list" ? "sketchy-shadow" : "sketchy-border"}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-navy font-display">YEAR</span>
-              <div className="flex gap-2">
+            {/* Year Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">YEAR</span>
+              <div className="flex flex-wrap gap-2">
                 {years.map((year) => (
                   <Badge
                     key={year}
                     variant={selectedYear === year ? "default" : "outline"}
-                    className={`cursor-pointer ${selectedYear === year ? "sketchy-border bg-primary" : "border-2 border-navy"}`}
+                    className={`cursor-pointer text-xs sm:text-sm px-2 sm:px-3 py-1 ${selectedYear === year ? "sketchy-border bg-primary" : "border-2 border-navy"}`}
                     onClick={() => setSelectedYear(year)}
                   >
                     {year}
                   </Badge>
                 ))}
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-navy font-display">TYPE</span>
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[180px] sketchy-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {resourceTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="ml-auto flex gap-2">
-              <Button
-                variant={viewMode === "grid" ? "default" : "outline"}
-                size="icon"
-                onClick={() => setViewMode("grid")}
-                className={viewMode === "grid" ? "sketchy-shadow" : "sketchy-border"}
-              >
-                <Grid3x3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="icon"
-                onClick={() => setViewMode("list")}
-                className={viewMode === "list" ? "sketchy-shadow" : "sketchy-border"}
-              >
-                <List className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </div>
@@ -159,7 +163,7 @@ const Browse = () => {
             </div>
 
             {/* Resource Grid */}
-            <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
+            <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" : "space-y-4"}>
               {filteredResources.map((resource) => (
                 <ResourceCard key={resource.id} resource={resource} />
               ))}

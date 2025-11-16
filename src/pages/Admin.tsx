@@ -91,20 +91,20 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-3xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 hand-heading text-navy font-display">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-3 hand-heading text-navy font-display">
               ADMIN PANEL
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground">
               Upload new educational resources for students to access
             </p>
           </div>
 
-          <Alert className="mb-6 border-primary/50 bg-primary/10">
+          <Alert className="mb-4 sm:mb-6 border-primary/50 bg-primary/10">
             <Info className="h-4 w-4 text-primary" />
-            <AlertDescription className="text-foreground/80">
+            <AlertDescription className="text-sm sm:text-base text-foreground/80">
               <strong>Admin Access Required</strong>
               <br />
               This is a mock admin panel for prototype purposes. In production, this would be 
@@ -112,27 +112,27 @@ const Admin = () => {
             </AlertDescription>
           </Alert>
 
-          <Card className="p-8 sketchy-border paper-texture">
-            <h2 className="text-2xl font-bold mb-6 font-display text-navy">UPLOAD RESOURCE</h2>
+          <Card className="p-4 sm:p-6 md:p-8 sketchy-border paper-texture">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 font-display text-navy">UPLOAD RESOURCE</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
-                <Label htmlFor="title" className="text-navy font-semibold">
+                <Label htmlFor="title" className="text-navy font-semibold text-sm sm:text-base">
                   Title <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="title"
                   placeholder="e.g., Data Structures Lecture Notes - Module 1"
-                  className="mt-2 sketchy-border"
+                  className="mt-2 sketchy-border w-full"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <Label htmlFor="department" className="text-navy font-semibold">
+                  <Label htmlFor="department" className="text-navy font-semibold text-sm sm:text-base">
                     Department <span className="text-destructive">*</span>
                   </Label>
                   <Select 
@@ -140,7 +140,7 @@ const Admin = () => {
                     value={formData.department}
                     onValueChange={(value) => setFormData({ ...formData, department: value })}
                   >
-                    <SelectTrigger id="department" className="mt-2 sketchy-border">
+                    <SelectTrigger id="department" className="mt-2 sketchy-border w-full">
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -154,7 +154,7 @@ const Admin = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="year" className="text-navy font-semibold">
+                  <Label htmlFor="year" className="text-navy font-semibold text-sm sm:text-base">
                     Year <span className="text-destructive">*</span>
                   </Label>
                   <Select 
@@ -162,7 +162,7 @@ const Admin = () => {
                     value={formData.year}
                     onValueChange={(value) => setFormData({ ...formData, year: value })}
                   >
-                    <SelectTrigger id="year" className="mt-2 sketchy-border">
+                    <SelectTrigger id="year" className="mt-2 sketchy-border w-full">
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,7 +176,7 @@ const Admin = () => {
               </div>
 
               <div>
-                <Label htmlFor="sem" className="text-navy font-semibold">
+                <Label htmlFor="sem" className="text-navy font-semibold text-sm sm:text-base">
                   Semester <span className="text-destructive">*</span>
                 </Label>
                 <Select 
@@ -184,7 +184,7 @@ const Admin = () => {
                   value={formData.sem}
                   onValueChange={(value) => setFormData({ ...formData, sem: value })}
                 >
-                  <SelectTrigger id="sem" className="mt-2 sketchy-border">
+                  <SelectTrigger id="sem" className="mt-2 sketchy-border w-full">
                     <SelectValue placeholder="Select semester" />
                   </SelectTrigger>
                   <SelectContent>
@@ -200,15 +200,15 @@ const Admin = () => {
                 </Select>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <Label htmlFor="subject" className="text-navy font-semibold">
+                  <Label htmlFor="subject" className="text-navy font-semibold text-sm sm:text-base">
                     Subject <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="subject"
                     placeholder="e.g., Data Structures"
-                    className="mt-2 sketchy-border"
+                    className="mt-2 sketchy-border w-full"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     required
@@ -216,7 +216,7 @@ const Admin = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="type" className="text-navy font-semibold">
+                  <Label htmlFor="type" className="text-navy font-semibold text-sm sm:text-base">
                     Resource Type <span className="text-destructive">*</span>
                   </Label>
                   <Select 
@@ -224,7 +224,7 @@ const Admin = () => {
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
-                    <SelectTrigger id="type" className="mt-2 sketchy-border">
+                    <SelectTrigger id="type" className="mt-2 sketchy-border w-full">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -239,13 +239,13 @@ const Admin = () => {
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-navy font-semibold">
+                <Label htmlFor="description" className="text-navy font-semibold text-sm sm:text-base">
                   Description
                 </Label>
                 <Textarea
                   id="description"
                   placeholder="Brief description of the resource content..."
-                  className="mt-2 sketchy-border min-h-24"
+                  className="mt-2 sketchy-border min-h-24 w-full"
                   rows={4}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -253,12 +253,12 @@ const Admin = () => {
               </div>
 
               <div>
-                <Label htmlFor="file" className="text-navy font-semibold">
+                <Label htmlFor="file" className="text-navy font-semibold text-sm sm:text-base">
                   File Upload <span className="text-destructive">*</span>
                 </Label>
-                <div className="mt-2 border-2 border-dashed border-navy rounded-lg p-8 text-center hover:bg-accent/50 transition-colors cursor-pointer">
-                  <Upload className="h-12 w-12 text-primary mx-auto mb-3" />
-                  <p className="text-sm font-medium mb-1">
+                <div className="mt-2 border-2 border-dashed border-navy rounded-lg p-6 sm:p-8 text-center hover:bg-accent/50 transition-colors cursor-pointer">
+                  <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-2 sm:mb-3" />
+                  <p className="text-xs sm:text-sm font-medium mb-1">
                     Click to upload or drag and drop
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -275,10 +275,10 @@ const Admin = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button
                   type="submit"
-                  className="flex-1 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display"
+                  className="flex-1 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display text-sm sm:text-base"
                   disabled={loading}
                 >
                   {loading ? (
@@ -293,7 +293,7 @@ const Admin = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="sketchy-border"
+                  className="sketchy-border text-sm sm:text-base"
                 >
                   Cancel
                 </Button>
