@@ -1,0 +1,506 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Paper background */
+    --background: 186 50% 96%;
+    --foreground: 200 50% 15%;
+
+    /* Card surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 200 50% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 50% 15%;
+
+    /* Cyan/Teal primary palette */
+    --primary: 189 65% 60%;
+    --primary-foreground: 0 0% 100%;
+    
+    --primary-dark: 189 55% 48%;
+    --primary-light: 189 70% 72%;
+
+    /* Navy ink */
+    --navy: 205 65% 12%;
+    --navy-foreground: 0 0% 100%;
+
+    --secondary: 189 65% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 200 20% 85%;
+    --muted-foreground: 200 25% 40%;
+
+    --accent: 189 70% 85%;
+    --accent-foreground: 200 50% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 25% 75%;
+    --input: 200 20% 90%;
+    --ring: 189 65% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 200 30% 8%;
+    --foreground: 186 50% 96%;
+
+    --card: 200 25% 12%;
+    --card-foreground: 186 50% 96%;
+
+    --popover: 200 25% 12%;
+    --popover-foreground: 186 50% 96%;
+
+    --primary: 189 65% 60%;
+    --primary-foreground: 0 0% 100%;
+    
+    --primary-dark: 189 55% 48%;
+    --primary-light: 189 70% 72%;
+
+    --navy: 205 65% 12%;
+    --navy-foreground: 0 0% 100%;
+
+    --secondary: 189 55% 48%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 200 20% 20%;
+    --muted-foreground: 200 15% 60%;
+
+    --accent: 189 40% 25%;
+    --accent-foreground: 186 50% 96%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 20% 25%;
+    --input: 200 20% 20%;
+    --ring: 189 65% 60%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    position: relative;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 50%, hsl(var(--navy) / 0.03) 1px, transparent 1px),
+      radial-gradient(circle at 80% 80%, hsl(var(--navy) / 0.03) 1px, transparent 1px),
+      radial-gradient(circle at 40% 20%, hsl(var(--navy) / 0.02) 1px, transparent 1px);
+    background-size: 200px 200px, 150px 150px, 180px 180px;
+    background-position: 0 0, 40px 60px, 80px 20px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--navy) / 0.01) 2px,
+        hsl(var(--navy) / 0.01) 4px
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  #root {
+    position: relative;
+    z-index: 2;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .sketchy-shadow {
+    box-shadow: 
+      3px 5px 0 hsl(var(--navy) / 0.6),
+      3.5px 5.5px 0 hsl(var(--navy) / 0.3);
+  }
+  
+  .sketchy-border {
+    border: 3px solid hsl(var(--navy));
+    border-radius: var(--radius);
+    position: relative;
+  }
+  
+  .sketchy-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: var(--radius);
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--navy) / 0.1),
+      transparent 50%,
+      hsl(var(--navy) / 0.05)
+    );
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  
+  .hand-heading {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-shadow: 
+      2px 2px 0 hsl(var(--navy) / 0.15),
+      3px 3px 0 hsl(var(--navy) / 0.1),
+      4px 4px 0 hsl(var(--navy) / 0.05);
+    position: relative;
+    display: inline-block;
+  }
+  
+  .hand-heading::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    text-shadow: 
+      -1px -1px 0 hsl(var(--primary) / 0.3),
+      1px -1px 0 hsl(var(--primary) / 0.3),
+      -1px 1px 0 hsl(var(--primary) / 0.3),
+      1px 1px 0 hsl(var(--primary) / 0.3);
+  }
+  
+  .doodle-star {
+    position: relative;
+  }
+  
+  .doodle-star::before {
+    content: '✨';
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    font-size: 1.25rem;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+  }
+  
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(8deg); }
+  }
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  
+  /* Decorative Doodles */
+  .doodle-decoration {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.4;
+    z-index: 0;
+  }
+  
+  .doodle-star {
+    position: relative;
+  }
+  
+  .doodle-star::before {
+    content: '✨';
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    font-size: 1.25rem;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Hand-drawn style decorative elements */
+  .doodle-arrow {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid hsl(var(--primary));
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    opacity: 0.3;
+    animation: wiggle 4s ease-in-out infinite;
+  }
+  
+  .doodle-circle {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 3px solid hsl(var(--primary));
+    border-radius: 50%;
+    opacity: 0.25;
+    animation: float-slow 5s ease-in-out infinite;
+  }
+  
+  .doodle-line {
+    position: absolute;
+    height: 2px;
+    background: hsl(var(--primary) / 0.2);
+    transform-origin: left;
+    animation: wiggle 3s ease-in-out infinite;
+  }
+  
+  .doodle-squiggle {
+    position: absolute;
+    width: 60px;
+    height: 20px;
+    border: 2px solid hsl(var(--primary));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    opacity: 0.3;
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .doodle-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: hsl(var(--primary));
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: float-slow 4s ease-in-out infinite;
+  }
+  
+  .doodle-check {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid hsl(var(--primary));
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    opacity: 0.3;
+    animation: wiggle 5s ease-in-out infinite;
+  }
+  
+  .paper-texture {
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(var(--navy) / 0.02) 1%, transparent 1%),
+      radial-gradient(circle at 75% 75%, hsl(var(--navy) / 0.02) 1%, transparent 1%);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+  }
+  
+  .handwritten {
+    font-family: 'Permanent Marker', cursive;
+    letter-spacing: 0.02em;
+  }
+  
+  .text-sketchy {
+    text-shadow: 
+      1px 1px 0 hsl(var(--foreground) / 0.1),
+      2px 2px 2px hsl(var(--navy) / 0.1);
+  }
+  
+  /* EduVerza Logo Style Text - 3D Block Letters with Teal/Blue Colors and Hatching Texture */
+  .eduverza-text {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    color: hsl(189 65% 60%); /* Vibrant teal blue */
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    -webkit-text-stroke: 2px hsl(205 65% 40%); /* Blue outline */
+    text-stroke: 2px hsl(205 65% 40%); /* Blue outline */
+    paint-order: stroke fill;
+    filter: drop-shadow(0 0 0.5px hsl(189 55% 48%));
+    text-shadow: 
+      /* Blue outline effect */
+      0 0 2px hsl(205 65% 40%),
+      0 0 4px hsl(205 65% 40% / 0.8),
+      -1px -1px 0 hsl(205 65% 40%),
+      1px -1px 0 hsl(205 65% 40%),
+      -1px 1px 0 hsl(205 65% 40%),
+      1px 1px 0 hsl(205 65% 40%),
+      /* Main text shadow for 3D effect */
+      2px 2px 0 hsl(189 55% 48%),
+      3px 3px 0 hsl(189 55% 48% / 0.8),
+      4px 4px 0 hsl(189 55% 48% / 0.6),
+      /* Uneven edges for hand-drawn look */
+      -0.5px -0.5px 0 hsl(189 65% 60%),
+      0.5px -0.5px 0 hsl(189 65% 60%),
+      -0.5px 0.5px 0 hsl(189 65% 60%),
+      0.5px 0.5px 0 hsl(189 65% 60%),
+      /* Additional depth */
+      1px 1px 2px hsl(205 65% 12% / 0.3);
+  }
+  
+  .eduverza-text::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    color: hsl(189 55% 48%); /* Darker teal for bottom/right shadow */
+    transform: translate(3px, 3px);
+    -webkit-text-stroke: 1px hsl(205 65% 12%);
+    text-stroke: 1px hsl(205 65% 12%);
+  }
+  
+  .eduverza-text::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        hsl(189 65% 60% / 0.15) 2px,
+        hsl(189 65% 60% / 0.15) 4px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 2px,
+        hsl(189 65% 60% / 0.1) 2px,
+        hsl(189 65% 60% / 0.1) 4px
+      );
+    background-size: 8px 8px, 6px 6px;
+    background-position: 0 0, 2px 2px;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    z-index: 1;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  
+  /* Alternative simpler version without hatching overlay */
+  .eduverza-text-simple {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    color: hsl(189 65% 60%); /* Vibrant teal blue */
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    -webkit-text-stroke: 2px hsl(205 65% 40%); /* Blue outline */
+    text-stroke: 2px hsl(205 65% 40%); /* Blue outline */
+    paint-order: stroke fill;
+    text-shadow: 
+      /* Blue outline effect */
+      0 0 2px hsl(205 65% 40%),
+      0 0 4px hsl(205 65% 40% / 0.8),
+      -1px -1px 0 hsl(205 65% 40%),
+      1px -1px 0 hsl(205 65% 40%),
+      -1px 1px 0 hsl(205 65% 40%),
+      1px 1px 0 hsl(205 65% 40%),
+      /* 3D block letter effect - darker on bottom/right */
+      2px 2px 0 hsl(189 55% 48%),
+      3px 3px 0 hsl(189 55% 48% / 0.9),
+      4px 4px 0 hsl(189 55% 48% / 0.7),
+      5px 5px 0 hsl(189 55% 48% / 0.5),
+      /* Hand-drawn uneven edges */
+      -0.3px -0.3px 0 hsl(189 70% 72%),
+      0.3px -0.3px 0 hsl(189 70% 72%),
+      -0.3px 0.3px 0 hsl(189 70% 72%),
+      0.3px 0.3px 0 hsl(189 70% 72%),
+      /* Additional depth and texture */
+      1px 1px 1px hsl(205 65% 12% / 0.4),
+      2px 2px 3px hsl(205 65% 12% / 0.2);
+  }
+  
+  /* Header logo - no uppercase transform */
+  .eduverza-logo {
+    text-transform: none !important;
+  }
+  
+  /* Hatching texture overlay for text */
+  .eduverza-text-with-texture {
+    position: relative;
+    background: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 3px,
+        hsl(189 65% 60% / 0.2) 3px,
+        hsl(189 65% 60% / 0.2) 6px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 3px,
+        hsl(189 65% 60% / 0.15) 3px,
+        hsl(189 65% 60% / 0.15) 6px
+      );
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-size: 12px 12px, 10px 10px;
+  }
+}
