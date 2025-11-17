@@ -241,9 +241,9 @@ const Home = () => {
             Join hundreds of students accessing quality educational resources
           </p>
           <Link to="/browse">
-            <Button size="lg" className="text-lg px-8 py-6 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display">
+            <Button size="default" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display w-full sm:w-auto">
               EXPLORE RESOURCES NOW
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </Link>
         </Card>
