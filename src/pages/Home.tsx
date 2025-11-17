@@ -3,8 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FileText, TrendingUp, Users, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useStats } from "@/hooks/useSupabase";
 
 const Home = () => {
+  const { stats, loading } = useStats();
+
+  // Format numbers with commas and "+" sign
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('en-US') + '+';
+  };
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -109,7 +116,9 @@ const Home = () => {
               <div className="doodle-circle"></div>
             </div>
             <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
-            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">1,200+</div>
+            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">
+              {loading ? '...' : formatNumber(stats.totalResources)}
+            </div>
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Resources</div>
           </Card>
           
@@ -118,7 +127,9 @@ const Home = () => {
               <div className="doodle-dot"></div>
             </div>
             <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
-            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">5,000+</div>
+            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">
+              {loading ? '...' : formatNumber(stats.totalDownloads)}
+            </div>
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Downloads</div>
           </Card>
           
@@ -127,7 +138,9 @@ const Home = () => {
               <div className="doodle-check"></div>
             </div>
             <Users className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
-            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">800+</div>
+            <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">
+              {loading ? '...' : formatNumber(stats.activeStudents)}
+            </div>
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Active Students</div>
           </Card>
         </div>

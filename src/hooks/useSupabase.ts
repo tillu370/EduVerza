@@ -93,3 +93,77 @@ export function useResource(id: string) {
   return { resource, loading, error };
 }
 
+/**
+ * Interface for stats data
+ */
+export interface Stats {
+  totalResources: number;
+  totalDownloads: number;
+  activeStudents: number; // Estimated based on downloads (downloads / 5)
+}
+
+/**
+ * Hook to fetch real-time stats from Supabase
+ */
+export function useStats() {
+  const [stats, setStats] = useState<Stats>({
+    totalResources: 0,
+    totalDownloads: 0,
+    activeStudents: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        setLoading(true);
+        
+        // Fetch total resources count
+        const { count: resourcesCount, error: countError } = await supabase
+          .from('resources')
+          .select('*', { count: 'exact', head: true });
+
+        if (countError) throw countError;
+
+        // Fetch total downloads sum
+        const { data: downloadsData, error: downloadsError } = await supabase
+          .from('resources')
+          .select('downloads');
+
+        if (downloadsError) throw downloadsError;
+
+        const totalDownloads = downloadsData?.reduce((sum, item) => sum + (item.downloads || 0), 0) || 0;
+        
+        // Estimate active students (downloads / 5, with minimum of resources count)
+        // This is an approximation - in a real app, you'd track unique users
+        const estimatedStudents = Math.max(
+          Math.round(totalDownloads / 5),
+          resourcesCount || 0
+        );
+
+        setStats({
+          totalResources: resourcesCount || 0,
+          totalDownloads: totalDownloads,
+          activeStudents: estimatedStudents,
+        });
+      } catch (err) {
+        setError(err as Error);
+        console.error('Error fetching stats:', err);
+        // Set fallback values on error
+        setStats({
+          totalResources: 0,
+          totalDownloads: 0,
+          activeStudents: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, []);
+
+  return { stats, loading, error };
+}
+
