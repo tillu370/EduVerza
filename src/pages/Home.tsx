@@ -15,6 +15,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <h1 className="sr-only">EduVerza — College resources crafted with care</h1>
       
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 md:py-24 relative overflow-hidden">
@@ -55,12 +56,15 @@ const Home = () => {
         </div>
         
         <div className="text-center max-w-4xl mx-auto relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border-2 border-navy bg-primary/10 sketchy-shadow">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border-[3px] border-navy bg-primary/10 sketchy-shadow">
             <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold text-navy font-display">Hand-sketched for Students</span>
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl mb-4 sm:mb-6 leading-tight px-2">
+          <div
+            aria-hidden="true"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl mb-4 sm:mb-6 leading-tight px-2"
+          >
             <span className="eduverza-text-simple" data-text="COLLEGE RESOURCES,">
             COLLEGE RESOURCES,
             </span>
@@ -68,22 +72,29 @@ const Home = () => {
             <span className="eduverza-text-simple" data-text="CRAFTED WITH CARE">
             CRAFTED WITH CARE
             </span>
-          </h1>
+          </div>
           
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground/80 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Browse, download, and share educational materials from your college. 
             Notes, papers, records — all in one friendly place.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
             <Link to="/browse" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto border-transparent bg-[hsl(var(--paint-1))] text-navy hover:bg-[hsl(var(--paint-2))] font-bold font-display"
+              >
                 BROWSE RESOURCES
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Link to="/about" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 sketchy-border font-bold font-display">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto text-base sm:text-lg font-bold font-display bg-transparent"
+              >
                 How It Works
               </Button>
             </Link>
@@ -111,7 +122,7 @@ const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto relative z-10">
-          <Card className="p-6 sm:p-8 text-center sketchy-border sketchy-shadow bg-card hover:rotate-[-1deg] transition-transform paper-texture relative overflow-visible">
+          <Card className="p-6 sm:p-8 text-center bg-card hover:rotate-[-1deg] transition-transform paper-texture relative overflow-visible">
             <div className="doodle-decoration -top-2 -right-2">
               <div className="doodle-circle"></div>
             </div>
@@ -122,7 +133,7 @@ const Home = () => {
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Resources</div>
           </Card>
           
-          <Card className="p-6 sm:p-8 text-center sketchy-border sketchy-shadow bg-card hover:rotate-[1deg] transition-transform paper-texture relative overflow-visible">
+          <Card className="p-6 sm:p-8 text-center bg-card hover:rotate-[1deg] transition-transform paper-texture relative overflow-visible">
             <div className="doodle-decoration -top-2 -left-2">
               <div className="doodle-dot"></div>
             </div>
@@ -133,7 +144,7 @@ const Home = () => {
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Downloads</div>
           </Card>
           
-          <Card className="p-6 sm:p-8 text-center sketchy-border sketchy-shadow bg-card hover:rotate-[-1deg] transition-transform paper-texture relative overflow-visible">
+          <Card className="p-6 sm:p-8 text-center bg-card hover:rotate-[-1deg] transition-transform paper-texture relative overflow-visible">
             <div className="doodle-decoration -bottom-2 -right-2">
               <div className="doodle-check"></div>
             </div>
@@ -177,7 +188,7 @@ const Home = () => {
           </p>
           
           <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-            <Card className="p-6 sm:p-8 sketchy-border bg-card paper-texture">
+            <Card className="p-6 sm:p-8 bg-card paper-texture">
               <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg bg-primary/20 flex items-center justify-center sketchy-border mb-3 sm:mb-4">
                 <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
@@ -188,7 +199,7 @@ const Home = () => {
               </p>
             </Card>
             
-            <Card className="p-6 sm:p-8 sketchy-border bg-card paper-texture">
+            <Card className="p-6 sm:p-8 bg-card paper-texture">
               <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg bg-primary/20 flex items-center justify-center sketchy-border mb-3 sm:mb-4">
                 <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
@@ -199,7 +210,7 @@ const Home = () => {
               </p>
             </Card>
             
-            <Card className="p-6 sm:p-8 sketchy-border bg-card paper-texture">
+            <Card className="p-6 sm:p-8 bg-card paper-texture">
               <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg bg-primary/20 flex items-center justify-center sketchy-border mb-3 sm:mb-4">
                 <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
@@ -210,7 +221,7 @@ const Home = () => {
               </p>
             </Card>
             
-            <Card className="p-6 sm:p-8 sketchy-border bg-card paper-texture">
+            <Card className="p-6 sm:p-8 bg-card paper-texture">
               <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg bg-primary/20 flex items-center justify-center sketchy-border mb-3 sm:mb-4">
                 <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
@@ -246,7 +257,7 @@ const Home = () => {
           <div className="doodle-line" style={{ width: '50px', transform: 'rotate(-30deg)' }}></div>
         </div>
         
-        <Card className="p-12 text-center sketchy-border sketchy-shadow bg-primary/10 max-w-3xl mx-auto paper-texture relative z-10">
+        <Card className="p-12 text-center bg-primary/10 max-w-3xl mx-auto paper-texture relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 hand-heading text-navy font-display">
             READY TO GET STARTED?
           </h2>
@@ -254,7 +265,7 @@ const Home = () => {
             Join hundreds of students accessing quality educational resources
           </p>
           <Link to="/browse">
-            <Button size="default" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 sketchy-shadow bg-primary hover:bg-primary-dark font-bold font-display w-full sm:w-auto">
+            <Button size="default" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 border-transparent bg-[hsl(var(--paint-1))] text-navy w-full sm:w-auto font-bold font-display">
               EXPLORE RESOURCES NOW
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Button>

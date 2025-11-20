@@ -57,7 +57,8 @@ const Browse = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search by title, subject, or description..."
-              className="pl-10 sketchy-border bg-card w-full"
+              aria-label="Search resources on browse page"
+              className="pl-11 w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -69,7 +70,7 @@ const Browse = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                 <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">DEPARTMENT</span>
                 <Select value={selectedDept} onValueChange={setSelectedDept}>
-                  <SelectTrigger className="w-full sm:w-[180px] sketchy-border">
+                  <SelectTrigger className="w-full sm:w-[200px]" aria-label="Filter by department">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -85,7 +86,7 @@ const Browse = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                 <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">TYPE</span>
                 <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="w-full sm:w-[180px] sketchy-border">
+                  <SelectTrigger className="w-full sm:w-[200px]" aria-label="Filter by resource type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -103,7 +104,7 @@ const Browse = () => {
                   variant={viewMode === "grid" ? "default" : "outline"}
                   size="icon"
                   onClick={() => setViewMode("grid")}
-                  className={viewMode === "grid" ? "sketchy-shadow" : "sketchy-border"}
+                  aria-pressed={viewMode === "grid"}
                 >
                   <Grid3x3 className="h-4 w-4" />
                 </Button>
@@ -111,7 +112,7 @@ const Browse = () => {
                   variant={viewMode === "list" ? "default" : "outline"}
                   size="icon"
                   onClick={() => setViewMode("list")}
-                  className={viewMode === "list" ? "sketchy-shadow" : "sketchy-border"}
+                  aria-pressed={viewMode === "list"}
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -123,14 +124,17 @@ const Browse = () => {
               <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">YEAR</span>
               <div className="flex flex-wrap gap-2">
                 {years.map((year) => (
-                  <Badge
+                  <button
                     key={year}
-                    variant={selectedYear === year ? "default" : "outline"}
-                    className={`cursor-pointer text-xs sm:text-sm px-2 sm:px-3 py-1 ${selectedYear === year ? "sketchy-border bg-primary" : "border-2 border-navy"}`}
+                    type="button"
                     onClick={() => setSelectedYear(year)}
+                    aria-pressed={selectedYear === year}
+                    className="focus-visible:outline-none"
                   >
-                    {year}
-                  </Badge>
+                    <Badge variant={selectedYear === year ? "active" : "outline"}>
+                      {year}
+                    </Badge>
+                  </button>
                 ))}
               </div>
             </div>
@@ -147,9 +151,24 @@ const Browse = () => {
 
         {/* Error State */}
         {error && (
-          <div className="text-center py-16">
-            <p className="text-xl text-destructive mb-4">Error loading resources</p>
-            <p className="text-muted-foreground">{error.message}</p>
+          <div className="text-center py-16 px-4">
+            <div className="max-w-2xl mx-auto">
+              <p className="text-xl sm:text-2xl font-bold text-destructive mb-4">Error loading resources</p>
+              <div className="bg-destructive/10 border-2 border-destructive/20 rounded-lg p-4 sm:p-6 mb-4 text-left">
+                <p className="text-sm sm:text-base text-foreground mb-2 font-semibold">Error Details:</p>
+                <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap">{error.message}</p>
+              </div>
+              <div className="bg-muted/50 border-2 border-muted rounded-lg p-4 sm:p-6 text-left">
+                <p className="text-sm sm:text-base font-semibold mb-2">Troubleshooting Steps:</p>
+                <ol className="text-sm sm:text-base text-muted-foreground space-y-2 list-decimal list-inside">
+                  <li>Check if environment variables are set in Vercel (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)</li>
+                  <li>Verify Supabase project is active and not paused</li>
+                  <li>Check if 'resources' table exists in Supabase</li>
+                  <li>Open browser console (F12) for more details</li>
+                  <li>Redeploy after adding environment variables</li>
+                </ol>
+              </div>
+            </div>
           </div>
         )}
 
