@@ -20,22 +20,67 @@ const Browse = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedDept, setSelectedDept] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All Years");
+  const [selectedSem, setSelectedSem] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState("All");
+  const [selectedSubject, setSelectedSubject] = useState("All Subjects");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const selectedYearNumber = useMemo(() => {
+    if (selectedYear === "All Years") return null;
+    const matched = selectedYear.match(/Year (\d)/);
+    return matched ? parseInt(matched[1]) : null;
+  }, [selectedYear]);
+
+  const yearToSemesters: Record<number, number[]> = {
+    1: [1, 2],
+    2: [3, 4],
+    3: [5, 6],
+    4: [7, 8],
+  };
+
+  const availableSemesters = selectedYearNumber ? yearToSemesters[selectedYearNumber] ?? [] : [];
+
+  const subjectOptions = useMemo(() => {
+    if (!selectedYearNumber || !selectedSem) return [];
+    const subjects = resources
+      .filter((resource) => resource.year === selectedYearNumber && resource.sem === selectedSem)
+      .map((resource) => resource.subject);
+    return Array.from(new Set(subjects)).sort();
+  }, [resources, selectedYearNumber, selectedSem]);
+
+  const isSubjectEnabled = selectedYearNumber !== null && selectedSem !== null && subjectOptions.length > 0;
+
+  const handleYearSelect = (year: string) => {
+    setSelectedYear(year);
+    setSelectedSem(null);
+    setSelectedSubject("All Subjects");
+  };
+
+  const handleSemSelect = (sem: number) => {
+    setSelectedSem(sem);
+    setSelectedSubject("All Subjects");
+  };
+
+  const handleSubjectSelect = (subject: string) => {
+    setSelectedSubject(subject);
+  };
 
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
       const matchesDept = selectedDept === "All" || resource.department === selectedDept;
-      const matchesYear = selectedYear === "All Years" || `Year ${resource.year}` === selectedYear;
+      const matchesYear = selectedYear === "All Years" || resource.year === selectedYearNumber;
+      const matchesSem = selectedSem === null || resource.sem === selectedSem;
+      const subjectFilterActive = isSubjectEnabled && selectedSubject !== "All Subjects";
+      const matchesSubject = !subjectFilterActive || resource.subject === selectedSubject;
       const matchesType = selectedType === "All" || resource.type === selectedType;
       const matchesSearch = searchQuery === "" || 
         resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         resource.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         resource.description?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      return matchesDept && matchesYear && matchesType && matchesSearch;
+      return matchesDept && matchesYear && matchesSem && matchesSubject && matchesType && matchesSearch;
     });
-  }, [resources, selectedDept, selectedYear, selectedType, searchQuery]);
+  }, [resources, selectedDept, selectedYear, selectedYearNumber, selectedSem, isSubjectEnabled, selectedSubject, selectedType, searchQuery]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,6 +144,29 @@ const Browse = () => {
                 </Select>
               </div>
 
+              {selectedYearNumber !== null && selectedSem !== null && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                  <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">SUBJECT</span>
+                  <Select
+                    value={selectedSubject}
+                    onValueChange={handleSubjectSelect}
+                    disabled={!isSubjectEnabled}
+                  >
+                    <SelectTrigger className="w-full sm:w-[200px]" aria-label="Filter by subject">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All Subjects">All Subjects</SelectItem>
+                      {subjectOptions.map((subject) => (
+                        <SelectItem key={subject} value={subject}>
+                          {subject}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="ml-auto flex gap-2">
                 <Button
                   variant={viewMode === "grid" ? "default" : "outline"}
@@ -127,7 +195,7 @@ const Browse = () => {
                   <button
                     key={year}
                     type="button"
-                    onClick={() => setSelectedYear(year)}
+                    onClick={() => handleYearSelect(year)}
                     aria-pressed={selectedYear === year}
                     className="focus-visible:outline-none"
                   >
@@ -138,6 +206,27 @@ const Browse = () => {
                 ))}
               </div>
             </div>
+
+            {selectedYearNumber !== null && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <span className="text-xs sm:text-sm font-semibold text-navy font-display whitespace-nowrap">SEMESTER</span>
+                <div className="flex flex-wrap gap-2">
+                  {availableSemesters.map((sem) => (
+                    <button
+                      key={sem}
+                      type="button"
+                      onClick={() => handleSemSelect(sem)}
+                      aria-pressed={selectedSem === sem}
+                      className="focus-visible:outline-none"
+                    >
+                      <Badge variant={selectedSem === sem ? "active" : "outline"}>
+                        Sem {sem}
+                      </Badge>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
