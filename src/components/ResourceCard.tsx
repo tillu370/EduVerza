@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 export interface Resource {
   id: string;
@@ -17,6 +19,7 @@ export interface Resource {
   downloads: number;
   fileSize?: string;
   description?: string;
+  fileUrl?: string;
 }
 
 interface ResourceCardProps {
@@ -26,9 +29,28 @@ interface ResourceCardProps {
 export const ResourceCard = ({ resource }: ResourceCardProps) => {
   const [bursting, setBursting] = useState(false);
 
-  const handleDownloadPulse = () => {
+  const handleDownload = async () => {
     setBursting(true);
     setTimeout(() => setBursting(false), 420);
+
+    if (!resource.fileUrl) {
+      toast.error("Download link not available yet.");
+      return;
+    }
+
+    const newWindow = window.open(resource.fileUrl, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
+      window.location.href = resource.fileUrl;
+    }
+
+    const { error } = await supabase
+      .from("resources")
+      .update({ downloads: (resource.downloads || 0) + 1 })
+      .eq("id", resource.id);
+
+    if (error) {
+      console.error("Failed to increment downloads", error);
+    }
   };
 
   return (
@@ -88,7 +110,9 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
                 className="flex-1 justify-center download-pulse"
                 data-burst={bursting}
                 aria-label={`Download ${resource.title}`}
-                onClick={handleDownloadPulse}
+                onClick={handleDownload}
+                disabled={!resource.fileUrl}
+                title={resource.fileUrl ? undefined : "Download link coming soon"}
               >
                 <Download className="h-4 w-4" />
                 Download

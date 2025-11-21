@@ -6,12 +6,41 @@ import { Card } from "@/components/ui/card";
 import { Download, Share2, Flag, FileText, ArrowLeft, Loader2 } from "lucide-react";
 import { useResource } from "@/hooks/useSupabase";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+type ResourceMetric = "views" | "downloads";
 
 const ResourceDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { resource, loading, error } = useResource(id || "");
   const [isBursting, setIsBursting] = useState(false);
+  const trackedViewIdRef = useRef<string | null>(null);
+
+  const incrementMetric = useCallback(
+    async (metric: ResourceMetric) => {
+      if (!resource) return;
+
+      const currentValue = resource[metric] || 0;
+      const { error: updateError } = await supabase
+        .from("resources")
+        .update({ [metric]: currentValue + 1 })
+        .eq("id", resource.id);
+
+      if (updateError) {
+        console.error(`Failed to increment ${metric} for resource ${resource.id}`, updateError);
+      }
+    },
+    [resource]
+  );
+
+  useEffect(() => {
+    if (!resource?.id) return;
+    if (trackedViewIdRef.current === resource.id) return;
+
+    trackedViewIdRef.current = resource.id;
+    incrementMetric("views");
+  }, [resource?.id, incrementMetric]);
 
   if (loading) {
     return (
@@ -40,15 +69,41 @@ const ResourceDetail = () => {
     );
   }
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    if (!resource?.fileUrl) {
+      toast.error("Download link not available yet.");
+      return;
+    }
+
     setIsBursting(true);
     setTimeout(() => setIsBursting(false), 420);
+
+    const newWindow = window.open(resource.fileUrl, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
+      window.location.href = resource.fileUrl;
+    }
+
     toast.success("Download started!");
+    await incrementMetric("downloads");
   };
 
   const handleShare = () => {
     toast.success("Link copied to clipboard!");
   };
+
+  const hasPreview = !!resource.fileUrl;
+  const lowerFileUrl = resource.fileUrl?.toLowerCase() || "";
+  const filePath = (() => {
+    if (!resource?.fileUrl) return "";
+    try {
+      const parsed = new URL(resource.fileUrl);
+      return parsed.pathname.toLowerCase();
+    } catch (error) {
+      return lowerFileUrl.split(/[?#]/)[0];
+    }
+  })();
+  const isPdfFile = filePath.endsWith(".pdf");
+  const previewUrl = resource.fileUrl ? (isPdfFile ? `${resource.fileUrl}#toolbar=0&navpanes=0&scrollbar=0` : resource.fileUrl) : "";
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,14 +142,48 @@ const ResourceDetail = () => {
             </div>
 
             {/* Preview Area */}
-            <Card className="p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 bg-white paper-texture">
-              <div className="text-center py-8 sm:py-12 md:py-16 border-[3px] border-dashed border-navy/40 rounded-[12px]">
-                <FileText className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 text-primary mx-auto mb-3 sm:mb-4" />
-                <p className="text-lg sm:text-xl font-semibold mb-2">PDF Preview</p>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  Full preview would load here in production
-                </p>
-              </div>
+            <Card className="p-0 mb-4 sm:mb-6 bg-white paper-texture overflow-hidden border-[3px] border-navy/40">
+              {hasPreview ? (
+                <div className="relative w-full h-[420px] sm:h-[520px] bg-muted border-b border-dashed border-navy/30">
+                  {isPdfFile ? (
+                    <iframe
+                      key={previewUrl}
+                      src={previewUrl}
+                      title={`${resource.title} preview`}
+                      className="w-full h-full"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center px-6">
+                      <FileText className="h-16 w-16 text-primary mb-4" />
+                      <p className="text-lg font-semibold mb-2">Preview not supported</p>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        This file type can&apos;t be previewed in the browser. Use the download button to open it.
+                      </p>
+                      <Button onClick={handleDownload}>Download file</Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 sm:py-12 md:py-16 border-[3px] border-dashed border-navy/40 rounded-[12px] m-4">
+                  <FileText className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 text-primary mx-auto mb-3 sm:mb-4" />
+                  <p className="text-lg sm:text-xl font-semibold mb-2">Preview coming soon</p>
+                  <p className="text-sm sm:text-base text-muted-foreground">
+                    Upload a file URL in Supabase to enable the live document preview.
+                  </p>
+                </div>
+              )}
+              {hasPreview && (
+                <div className="px-4 sm:px-6 py-3 bg-muted/50 flex items-center justify-between flex-wrap gap-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    Having trouble viewing the file? Use the download button to open it in a new tab.
+                  </p>
+                  <Button size="sm" variant="outline" onClick={handleDownload}>
+                    <Download className="h-3.5 w-3.5 mr-2" />
+                    Download
+                  </Button>
+                </div>
+              )}
             </Card>
 
             {/* Action Buttons */}
@@ -104,6 +193,8 @@ const ResourceDetail = () => {
                 data-burst={isBursting}
                 onClick={handleDownload}
                 aria-label={`Download ${resource.title}`}
+                disabled={!resource.fileUrl}
+                title={resource.fileUrl ? undefined : "Download link coming soon"}
               >
                 <Download className="h-4 w-4 mr-2" />
                 DOWNLOAD
