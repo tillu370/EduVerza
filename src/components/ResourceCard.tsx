@@ -84,16 +84,7 @@ export const ResourceCard = ({ resource }: ResourceCardProps) => {
               </Badge>
             </div>
             
-            <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-              <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                {resource.views} views
-              </span>
-              <span className="flex items-center gap-1">
-                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-                {resource.downloads} downloads
-              </span>
-            </div>
+            <div className="mb-3 sm:mb-4" />
             
             <div className="mt-4 border-t border-dashed border-navy/30 pt-4 flex flex-col sm:flex-row gap-2">
               <Link to={`/resource/${resource.id}`} className="flex-1">

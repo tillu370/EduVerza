@@ -259,17 +259,6 @@ const ResourceDetail = () => {
                     <p className="font-medium">{resource.fileSize}</p>
                   </div>
                 )}
-                
-                <div className="pt-4 border-t">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Views</span>
-                    <span className="font-semibold">{resource.views}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Downloads</span>
-                    <span className="font-semibold">{resource.downloads}</span>
-                  </div>
-                </div>
               </div>
             </Card>
           </div>
