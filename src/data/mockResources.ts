@@ -161,4 +161,4 @@ export const mockResources: Resource[] = [
 
 export const departments = ["All", "Computer Science", "Electronics", "Mechanical", "Civil", "Chemical"];
 export const years = ["All Years", "Year 1", "Year 2", "Year 3", "Year 4"];
-export const resourceTypes = ["All", "Notes", "Previous Papers", "Records", "Observations"];
+export const resourceTypes = ["All", "Notes", "Previous Papers", "Records", "Observations", "Assignments"];
