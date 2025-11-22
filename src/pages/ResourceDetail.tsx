@@ -15,7 +15,19 @@ const ResourceDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { resource, loading, error } = useResource(id || "");
   const [isBursting, setIsBursting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const trackedViewIdRef = useRef<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const incrementMetric = useCallback(
     async (metric: ResourceMetric) => {
@@ -41,6 +53,30 @@ const ResourceDetail = () => {
     trackedViewIdRef.current = resource.id;
     incrementMetric("views");
   }, [resource?.id, incrementMetric]);
+
+  // Debug: Log preview URL
+  useEffect(() => {
+    if (resource?.fileUrl) {
+      const lowerFileUrl = resource.fileUrl?.toLowerCase() || "";
+      const filePath = (() => {
+        if (!resource?.fileUrl) return "";
+        try {
+          const parsed = new URL(resource.fileUrl);
+          return parsed.pathname.toLowerCase();
+        } catch (error) {
+          return lowerFileUrl.split(/[?#]/)[0];
+        }
+      })();
+      const isPdfFile = filePath.endsWith(".pdf");
+      const previewUrl = resource.fileUrl ? (isPdfFile ? `${resource.fileUrl}#toolbar=0&navpanes=0&scrollbar=0` : resource.fileUrl) : "";
+      
+      if (previewUrl) {
+        console.log('Preview URL:', previewUrl);
+        console.log('Is PDF:', isPdfFile);
+        console.log('Resource file URL:', resource.fileUrl);
+      }
+    }
+  }, [resource?.fileUrl]);
 
   if (loading) {
     return (
@@ -104,17 +140,6 @@ const ResourceDetail = () => {
   })();
   const isPdfFile = filePath.endsWith(".pdf");
   const previewUrl = resource.fileUrl ? (isPdfFile ? `${resource.fileUrl}#toolbar=0&navpanes=0&scrollbar=0` : resource.fileUrl) : "";
-  
-  // Detect mobile device
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -156,11 +181,12 @@ const ResourceDetail = () => {
             <Card className="p-0 mb-4 sm:mb-6 bg-white paper-texture overflow-hidden border-[3px] border-navy/40">
               {hasPreview ? (
                 <>
-                  <div className="relative w-full bg-muted border-b border-dashed border-navy/30" style={{ minHeight: isMobile ? '400px' : '420px', height: isMobile ? '400px' : 'auto' }}>
+                  <div className="relative w-full bg-muted border-b border-dashed border-navy/30" style={{ minHeight: isMobile ? '400px' : '420px', height: isMobile ? '400px' : '520px' }}>
                     {isPdfFile ? (
                       <>
                         <iframe
-                          key={previewUrl}
+                          key={`iframe-${previewUrl}`}
+                          ref={iframeRef}
                           src={previewUrl}
                           title={`${resource.title} preview`}
                           className="w-full"
@@ -173,6 +199,19 @@ const ResourceDetail = () => {
                           loading="lazy"
                           allow="fullscreen"
                         />
+                        <div 
+                          className="absolute top-2 right-2 z-10"
+                        >
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={handleDownload}
+                            className="bg-white/90 hover:bg-white shadow-md"
+                          >
+                            <Download className="h-3.5 w-3.5 mr-1" />
+                            Open
+                          </Button>
+                        </div>
                         {isMobile && (
                           <div 
                             className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none z-10"
@@ -186,6 +225,20 @@ const ResourceDetail = () => {
                             </div>
                           </div>
                         )}
+                        {/* Fallback message if iframe doesn't load */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted/95 z-0" style={{ display: 'none' }} id="preview-fallback">
+                          <div className="text-center px-6">
+                            <FileText className="h-16 w-16 text-primary mx-auto mb-4" />
+                            <p className="text-lg font-semibold mb-2">Preview unavailable</p>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Unable to load preview. Please use the download button to view the file.
+                            </p>
+                            <Button onClick={handleDownload} size="lg">
+                              <Download className="h-5 w-5 mr-2" />
+                              Open File
+                            </Button>
+                          </div>
+                        </div>
                       </>
                     ) : (
                       <div className="flex flex-col items-center justify-center text-center px-6" style={{ minHeight: isMobile ? '400px' : '420px', height: isMobile ? '400px' : '520px' }}>
@@ -194,7 +247,10 @@ const ResourceDetail = () => {
                         <p className="text-sm text-muted-foreground mb-4">
                           This file type can&apos;t be previewed in the browser. Use the download button to open it.
                         </p>
-                        <Button onClick={handleDownload}>Download file</Button>
+                        <Button onClick={handleDownload} size="lg">
+                          <Download className="h-5 w-5 mr-2" />
+                          Open File
+                        </Button>
                       </div>
                     )}
                   </div>
