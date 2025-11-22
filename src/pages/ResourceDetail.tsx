@@ -104,6 +104,17 @@ const ResourceDetail = () => {
   })();
   const isPdfFile = filePath.endsWith(".pdf");
   const previewUrl = resource.fileUrl ? (isPdfFile ? `${resource.fileUrl}#toolbar=0&navpanes=0&scrollbar=0` : resource.fileUrl) : "";
+  
+  // Detect mobile device
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,26 +155,59 @@ const ResourceDetail = () => {
             {/* Preview Area */}
             <Card className="p-0 mb-4 sm:mb-6 bg-white paper-texture overflow-hidden border-[3px] border-navy/40">
               {hasPreview ? (
-                <div className="relative w-full h-[420px] sm:h-[520px] bg-muted border-b border-dashed border-navy/30">
-                  {isPdfFile ? (
-                    <iframe
-                      key={previewUrl}
-                      src={previewUrl}
-                      title={`${resource.title} preview`}
-                      className="w-full h-full"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                      <FileText className="h-16 w-16 text-primary mb-4" />
-                      <p className="text-lg font-semibold mb-2">Preview not supported</p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        This file type can&apos;t be previewed in the browser. Use the download button to open it.
-                      </p>
-                      <Button onClick={handleDownload}>Download file</Button>
-                    </div>
-                  )}
-                </div>
+                <>
+                  <div className="relative w-full bg-muted border-b border-dashed border-navy/30" style={{ minHeight: isMobile ? '400px' : '420px', height: isMobile ? '400px' : 'auto' }}>
+                    {isPdfFile ? (
+                      <>
+                        <iframe
+                          key={previewUrl}
+                          src={previewUrl}
+                          title={`${resource.title} preview`}
+                          className="w-full"
+                          style={{ 
+                            minHeight: isMobile ? '400px' : '420px',
+                            height: isMobile ? '400px' : '520px',
+                            display: 'block',
+                            border: 'none'
+                          }}
+                          loading="lazy"
+                          allow="fullscreen"
+                        />
+                        {isMobile && (
+                          <div 
+                            className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none z-10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownload();
+                            }}
+                          >
+                            <div className="bg-black/70 text-white px-4 py-2 rounded-lg text-xs text-center pointer-events-auto cursor-pointer">
+                              Tap here to open PDF in new tab for better viewing
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center px-6" style={{ minHeight: isMobile ? '400px' : '420px', height: isMobile ? '400px' : '520px' }}>
+                        <FileText className="h-16 w-16 text-primary mb-4" />
+                        <p className="text-lg font-semibold mb-2">Preview not supported</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          This file type can&apos;t be previewed in the browser. Use the download button to open it.
+                        </p>
+                        <Button onClick={handleDownload}>Download file</Button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="px-4 sm:px-6 py-3 bg-muted/50 flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                      {isMobile ? "For better viewing on mobile, use the download button." : "Having trouble viewing the file? Use the download button to open it in a new tab."}
+                    </p>
+                    <Button size="sm" variant="outline" onClick={handleDownload}>
+                      <Download className="h-3.5 w-3.5 mr-2" />
+                      {isMobile ? "Open in Tab" : "Download"}
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <div className="text-center py-8 sm:py-12 md:py-16 border-[3px] border-dashed border-navy/40 rounded-[12px] m-4">
                   <FileText className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 text-primary mx-auto mb-3 sm:mb-4" />
@@ -171,17 +215,6 @@ const ResourceDetail = () => {
                   <p className="text-sm sm:text-base text-muted-foreground">
                     Upload a file URL in Supabase to enable the live document preview.
                   </p>
-                </div>
-              )}
-              {hasPreview && (
-                <div className="px-4 sm:px-6 py-3 bg-muted/50 flex items-center justify-between flex-wrap gap-2">
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Having trouble viewing the file? Use the download button to open it in a new tab.
-                  </p>
-                  <Button size="sm" variant="outline" onClick={handleDownload}>
-                    <Download className="h-3.5 w-3.5 mr-2" />
-                    Download
-                  </Button>
                 </div>
               )}
             </Card>
