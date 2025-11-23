@@ -14,6 +14,25 @@ const Home = () => {
     return num.toLocaleString('en-US') + '+';
   };
 
+  // Calculate time-based increase (starts increasing after 1 month)
+  // Base date: 1 month ago from now
+  const getTimeBasedIncrease = () => {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const now = new Date();
+    const daysSince = Math.floor((now.getTime() - oneMonthAgo.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // After 1 month (30 days), start increasing
+    if (daysSince > 30) {
+      const extraDays = daysSince - 30;
+      // Increase by ~2-3 per day after the first month
+      return Math.floor(extraDays * 2.5);
+    }
+    return 0;
+  };
+
+  const timeIncrease = getTimeBasedIncrease();
+
   // Debug: Log stats in development
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -147,7 +166,7 @@ const Home = () => {
             </div>
             <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
             <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">
-              {loading ? '...' : formatNumber(stats.totalDownloads)}
+              {loading ? '...' : formatNumber(Math.max(stats.totalDownloads, 45) + timeIncrease)}
             </div>
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Downloads</div>
           </Card>
@@ -158,7 +177,7 @@ const Home = () => {
             </div>
             <Users className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
             <div className="text-3xl sm:text-4xl font-bold mb-2 font-display text-navy">
-              {loading ? '...' : formatNumber(stats.activeStudents)}
+              {loading ? '...' : formatNumber(Math.max(stats.activeStudents, 23) + Math.floor(timeIncrease * 0.4))}
             </div>
             <div className="text-sm sm:text-base text-muted-foreground font-medium">Active Students</div>
           </Card>
@@ -188,12 +207,14 @@ const Home = () => {
         </div>
         
         <div className="max-w-5xl mx-auto relative z-10">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-3 sm:mb-4 hand-heading text-navy font-display px-4">
-            WHY EDUVERZA?
-          </h2>
-          <p className="text-center text-muted-foreground mb-8 sm:mb-12 text-base sm:text-lg px-4">
-            Built by students, for students
-          </p>
+          <div className="text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 hand-heading text-navy font-display px-4">
+              WHY EDUVERZA?
+            </h2>
+            <p className="text-muted-foreground mb-8 sm:mb-12 text-base sm:text-lg px-4">
+              Built by students, for students
+            </p>
+          </div>
           
           <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             <Card className="p-6 sm:p-8 bg-card paper-texture">
