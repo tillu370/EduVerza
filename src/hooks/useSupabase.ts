@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Resource } from '@/components/ResourceCard';
 
@@ -230,10 +230,15 @@ export function useStats() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const isInitialLoad = useRef(true);
 
   const fetchStats = useCallback(async () => {
     try {
-      setLoading(true);
+      // Only show loading on initial load
+      if (isInitialLoad.current) {
+        setLoading(true);
+        isInitialLoad.current = false;
+      }
       setError(null);
       
       // Check if Supabase is configured
@@ -243,6 +248,7 @@ export function useStats() {
       if (!supabaseUrl || !supabaseKey || 
           supabaseUrl === 'https://placeholder.supabase.co' ||
           supabaseKey === 'placeholder-key') {
+        console.warn('Supabase not configured for stats');
         // Set fallback values if not configured
         setStats({
           totalResources: 0,
@@ -253,21 +259,42 @@ export function useStats() {
         return;
       }
       
+      console.log('Fetching stats from Supabase...');
+      
       // Fetch total resources count
       const { count: resourcesCount, error: countError } = await supabase
         .from('resources')
         .select('*', { count: 'exact', head: true });
 
-      if (countError) throw countError;
+      if (countError) {
+        console.error('Error fetching resources count:', countError);
+        throw countError;
+      }
 
-      // Fetch total downloads sum
-      const { data: downloadsData, error: downloadsError } = await supabase
+      console.log('Resources count:', resourcesCount);
+
+      // Fetch all resources to calculate downloads sum
+      // Fetch all columns to see what's available
+      const { data: resourcesData, error: resourcesError } = await supabase
         .from('resources')
-        .select('downloads');
+        .select('*');
 
-      if (downloadsError) throw downloadsError;
+      if (resourcesError) {
+        console.error('Error fetching resources for downloads:', resourcesError);
+        throw resourcesError;
+      }
 
-      const totalDownloads = downloadsData?.reduce((sum, item) => sum + (item.downloads || 0), 0) || 0;
+      console.log('Resources data sample (first item):', resourcesData?.[0]);
+      console.log('All column names:', resourcesData?.[0] ? Object.keys(resourcesData[0]) : 'No data');
+
+      // Try different possible column names
+      const totalDownloads = resourcesData?.reduce((sum, item) => {
+        // Try downloads, Downloads, download_count, etc.
+        const downloads = item.downloads || item.Downloads || item.download_count || item.downloadCount || 0;
+        return sum + (Number(downloads) || 0);
+      }, 0) || 0;
+      
+      console.log('Total downloads calculated:', totalDownloads);
       
       // Estimate active students (downloads / 5, with minimum of resources count)
       // This is an approximation - in a real app, you'd track unique users
@@ -276,17 +303,23 @@ export function useStats() {
         resourcesCount || 0
       );
 
+      console.log('Calculated stats:', {
+        totalResources: resourcesCount || 0,
+        totalDownloads: totalDownloads,
+        activeStudents: estimatedStudents,
+      });
+
       setStats({
         totalResources: resourcesCount || 0,
         totalDownloads: totalDownloads,
         activeStudents: estimatedStudents,
       });
     } catch (err: any) {
+      console.error('Error fetching stats:', err);
+      setError(err as Error);
       // Handle network errors silently for stats (don't show error, just use fallback)
       if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
         console.warn('Stats fetch failed (network error), using fallback values');
-      } else {
-        console.error('Error fetching stats:', err);
       }
       // Set fallback values on error
       setStats({
@@ -299,23 +332,31 @@ export function useStats() {
     }
   }, []);
 
+  // Initial fetch
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
 
+  // Set up realtime subscription for live updates
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
 
     const channel = supabase
-      .channel('resources-stats')
+      .channel('resources-stats-realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'resources' },
-        () => {
+        (payload) => {
+          // Refetch stats when resources change (INSERT, UPDATE, DELETE)
+          console.log('Resources changed, updating stats:', payload.eventType);
           fetchStats();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Stats realtime subscription active');
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);

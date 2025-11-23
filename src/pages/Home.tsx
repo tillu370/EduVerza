@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,12 +7,19 @@ import { Link } from "react-router-dom";
 import { useStats } from "@/hooks/useSupabase";
 
 const Home = () => {
-  const { stats, loading } = useStats();
+  const { stats, loading, error } = useStats();
 
   // Format numbers with commas and "+" sign
   const formatNumber = (num: number) => {
     return num.toLocaleString('en-US') + '+';
   };
+
+  // Debug: Log stats in development
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('Home stats:', { stats, loading, error });
+    }
+  }, [stats, loading, error]);
   return (
     <div className="min-h-screen bg-background">
       <Header />
